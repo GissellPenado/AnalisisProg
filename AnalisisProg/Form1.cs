@@ -19,23 +19,30 @@ namespace AnalisisProg
             InitializeComponent();
         }
 
-        private void btnGenerar_Click(object sender, EventArgs e)
+        private async void btnGenerar_Click(object sender, EventArgs e)
         {
             btnGenerar.Enabled = false;
             long cant = long.Parse(txtCantidad.Text);
 
-            Random rdn = new Random();
             numeros.Clear();
+            Random rdn = new Random();
+
+            lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
+
 
             Stopwatch sw = new Stopwatch();
-            lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
             sw.Start();
-            for (long i = 0; i < cant; i++)
+
+            await Task.Run(() =>
             {
-                numeros.Add(rdn.Next(100, 500000));
-            }
+                for (long i = 0; i < cant; i++)
+                {
+                    numeros.Add(rdn.Next(100, 500000));
+                }
+            });
             lstDatos.DataSource = null;
             lstDatos.DataSource = numeros;
+
             sw.Stop();
 
             lblTiempofin.Text = "Tiempo Fin: " + DateTime.Now.ToString("hh:mm:ss");
@@ -44,26 +51,17 @@ namespace AnalisisProg
 
         }
 
-        private void btnOrdenarInsertion_Click(object sender, EventArgs e)
+        private async void btnOrdenarInsertion_Click(object sender, EventArgs e)
         {
             Stopwatch sw = new Stopwatch();
             lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
-            sw.Start();
-            InsertionSort(numeros);
-            lstOrdenada.DataSource = null;
-            lstOrdenada.DataSource = numeros;
-            sw.Stop();
-            lblTiempofin.Text = "Tiempo Fin: " + DateTime.Now.ToString("hh:mm:ss");
-            lblDuracion.Text = "Duración: " + sw.ElapsedMilliseconds / 1000 + " segundos";
-        }
-
-        private void btnOrdenarQuick_Click(object sender, EventArgs e)
-        {
-            Stopwatch sw = new Stopwatch();
-            lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
+            
             sw.Start();
 
-            QuickSort(numeros, 0, numeros.Count - 1);
+            await Task.Run(() =>
+            {
+                InsertionSort(numeros);
+            });
 
             lstOrdenada.DataSource = null;
             lstOrdenada.DataSource = numeros;
@@ -72,7 +70,25 @@ namespace AnalisisProg
             lblDuracion.Text = "Duración: " + sw.ElapsedMilliseconds / 1000 + " segundos";
         }
 
-        private void btnBuscarSecuencial_Click(object sender, EventArgs e)
+        private async void btnOrdenarQuick_Click(object sender, EventArgs e)
+        {
+            Stopwatch sw = new Stopwatch();
+            lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
+            sw.Start();
+
+            await Task.Run(() =>
+            {
+                QuickSort(numeros, 0, numeros.Count - 1);
+            });
+
+            lstOrdenada.DataSource = null;
+            lstOrdenada.DataSource = numeros;
+            sw.Stop();
+            lblTiempofin.Text = "Tiempo Fin: " + DateTime.Now.ToString("hh:mm:ss");
+            lblDuracion.Text = "Duración: " + sw.ElapsedMilliseconds / 1000 + " segundos";
+        }
+
+        private async void btnBuscarSecuencial_Click(object sender, EventArgs e)
         {
             long valorBuscar = long.Parse(txtBuscar.Text);
             numeros.Sort();
@@ -80,7 +96,10 @@ namespace AnalisisProg
             lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
             sw.Start();
 
-            bool encontrado = BusquedaBinaria(numeros, valorBuscar);
+            bool encontrado = await Task.Run(() =>
+            {
+                return BusquedaSecuencial(numeros, valorBuscar);
+            });
 
             sw.Stop();
             lblTiempofin.Text = "Tiempo Fin: " + DateTime.Now.ToString("hh:mm:ss");
@@ -166,7 +185,7 @@ namespace AnalisisProg
             return i + 1;
         }
 
-        private void btnBuscarBinaria_Click(object sender, EventArgs e)
+        private async void btnBuscarBinaria_Click(object sender, EventArgs e)
         {
             long valorBuscar = long.Parse(txtBuscar.Text);
             // Asegurarse de que la lista esté ordenada antes de realizar búsqueda binaria
@@ -175,7 +194,10 @@ namespace AnalisisProg
             lblTiempoini.Text = "Tiempo de Inicio: " + DateTime.Now.ToString("hh:mm:ss");
             sw.Start();
 
-            bool encontrado = BusquedaBinaria(numeros, valorBuscar);
+            bool encontrado = await Task.Run(() =>
+            {
+                return BusquedaBinaria(numeros, valorBuscar);
+            });
 
             sw.Stop();
             lblTiempofin.Text = "Tiempo Fin: " + DateTime.Now.ToString("hh:mm:ss");
